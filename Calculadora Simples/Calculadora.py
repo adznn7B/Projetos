@@ -12,7 +12,7 @@ def escolhaOperacao():
 
     operacao = int(input('Escolha a operação que deseja realizar: '))
 
-    if operacao != 0 or operacao != 1 or operacao != 2 or operacao != 3 or operacao != 4:
+    if operacao != 0 and operacao != 1 and operacao != 2 and operacao != 3 and operacao != 4:
         raise print('Não existe nenhuma operação para esse número. Tente novamente!')
     else:
         return operacao
@@ -41,5 +41,3 @@ def escolhaValores():
 
 operacao = escolhaOperacao()
 x, y = escolhaValores()
-
-print(x, y)
