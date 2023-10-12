@@ -1,5 +1,5 @@
 def escolhaOperacao():
-    print('0 : Soma')
+    print('\n0 : Soma')
     print('1 : Subtração')
     print('2 : Multiplicação')
     print('3 : Divisão')
