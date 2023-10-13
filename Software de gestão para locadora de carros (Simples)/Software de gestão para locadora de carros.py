@@ -41,6 +41,7 @@ def telaInicio():
 
 def mostrarPortfolio():
     limparTela()
+    print("Segue nosso portfólio dos carros disponíveis!")
     print('\n[0] Chevrolet Tracker - R$120/dia')
     print('[1] Chevrolet Onix - R$90/dia')
     print('[2] Chevrolet Spin - R$150/dia')
@@ -73,5 +74,11 @@ def mostrarPortfolio():
         portfolio = int(input('R: '))
     else:
         return portfolio
+    
+def aluguelCarro():
+    limparTela()
+    print("Segue nossos carros disponíveis para aluguel!")
+    
+    
     
 telaInicio()
