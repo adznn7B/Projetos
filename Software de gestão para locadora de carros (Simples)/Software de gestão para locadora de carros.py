@@ -1,6 +1,8 @@
 import os
 import time
 
+carrosAlugados = {}
+
 def limparTela():
     os.system('cls' if os.name == 'nt' else 'clear')
     time.sleep(0.1)
@@ -48,6 +50,8 @@ def telaInicio():
                 encerrar = aluguelCarro(carrosDisponiveis)
                 if encerrar:
                     break
+            elif objetivo == 2:
+                devolverCarro(carrosDisponiveis)
             else:
                 print('Deu merda')
                 break
@@ -100,7 +104,8 @@ def aluguelCarro(carrosDisponiveis):
     preco = list(carrosDisponiveis.values())[carroEscolhido]
     limparTela()
     nomeCarro = list(carrosDisponiveis.keys())[carroEscolhido]
-    print(f'\nVocê escolheu {nomeCarro} por {diasAluguel} dias.')
+    nomeCarroEscolhido = nomeCarro.split('-')[0].strip()
+    print(f'\nVocê escolheu {nomeCarroEscolhido} por {diasAluguel} dias.')
     print(f'O aluguel totalizara R${preco * diasAluguel}. Deseja alugar?')
     print('\n=================================')
     print('\n0 - Sim')
@@ -117,7 +122,8 @@ def aluguelCarro(carrosDisponiveis):
         respostaAluguel = int(input('\nR: '))
     else:
         if respostaAluguel == 0:
-            print(f'\nParabéns você escolheu {nomeCarro} por {diasAluguel} dias.')
+            carrosAlugados[nomeCarro] = carrosDisponiveis.pop(nomeCarro)
+            print(f'\nParabéns você escolheu {nomeCarroEscolhido} por {diasAluguel} dias.')
             print('0 - Continuar')
             print('1 - Sair')
             aluguel = int(input('\nR: '))
@@ -136,5 +142,38 @@ def aluguelCarro(carrosDisponiveis):
                     return True
         else:
             return False
+
+def devolverCarro(carrosDisponiveis):
+    limparTela()
+    if not carrosAlugados:
+        print('Não há carros alugados no momento.')
+        time.sleep(2)
+        return
+    print("Segue a lista dos carros alugados:\n")
+    for indice, carro in enumerate(carrosAlugados):
+        nomeCarro = carro.split('-')[0].strip()
+        print(f'[{indice}] {nomeCarro}')
+
+    print('\n=================================')
+    while True:
+        try:
+            carroEscolhido = int(input('\nEscolha o código do carro que deseja devolver: '))
+            if 0 <= carroEscolhido < len(carrosAlugados):
+                break
+            else:
+                limparTela()
+                print("Por favor, escolha um código de carro válido.\n")
+                for indice, carro in enumerate(carrosAlugados):
+                    nomeCarro = carro.split('-')[0].strip()  # Divide o nome do carro pelo '-' e pega a primeira parte
+                    print(f'[{indice}] {nomeCarro}')
+        except ValueError:
+            print("Por favor, insira um número.")
+    
+    nomeCarro = list(carrosAlugados.keys())[carroEscolhido]
+    carrosDisponiveis[nomeCarro] = carrosAlugados[nomeCarro]
+    del carrosAlugados[nomeCarro]
+    nomeCarroDevolvido = nomeCarro.split('-')[0].strip()
+    print(f'\nVocê devolveu o {nomeCarroDevolvido} com sucesso!')
+    time.sleep(2)
 
 carrosDisponiveis = telaInicio()
