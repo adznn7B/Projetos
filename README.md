@@ -1,10 +1,6 @@
 <h1 align="center">Oi 👋, eu sou Adriel Sena de Alcântara!</h1>
 <h3 align="center">Apaixonado por ciência e análise de dados no mundo digital!</h3>
 
-- 🌱 Atualmente estou aprendendo **Machine Learning, PySpark e Web Scraping**
-
-- 💬 Me pergunte sobre **SQL, Power BI, Excel e Python**
-
 - 📫 Você me acha através do e-mail **adriel.sena2003@hotmail.com**
 
 - 📝 Aqui estão minhas habilidades e experiências [https://www.linkedin.com/in/adriel-alc%C3%A2ntara-b29b6665/](https://www.linkedin.com/in/adriel-alc%C3%A2ntara-b29b6665/)
