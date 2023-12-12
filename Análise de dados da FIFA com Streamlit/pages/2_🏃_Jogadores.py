@@ -13,7 +13,7 @@ st.set_page_config(
 # Carregando os dados se ainda não estiverem no estado da sessão.
 # Semelhante à página inicial, verificamos se o dataframe já foi carregado para otimizar o desempenho.
 if "data" not in st.session_state:
-    df_data = pd.read_csv('CLEAN_FIFA23_official_data.csv', index_col=0)  # Corrigi o caminho para ser relativo.
+    df_data = pd.read_csv('C:\\Users\\Adriel\\Documents\\GitHub\\Projetos\\Análise de dados da FIFA com Streamlit\\datasets\\CLEAN_FIFA23_official_data.csv', index_col=0)  # Corrigi o caminho para ser relativo.
     df_data = df_data[df_data['Contract Valid Until'] >= datetime.today().year]
     df_data = df_data.sort_values(by='Overall', ascending=False)
     st.session_state['data'] = df_data
