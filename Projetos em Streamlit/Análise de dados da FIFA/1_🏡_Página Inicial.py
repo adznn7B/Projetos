@@ -15,7 +15,7 @@ st.set_page_config(
 # O objetivo é evitar carregar o dataset toda vez que a página é atualizada.
 if "data" not in st.session_state:
     # Carregando o dataset a partir de um caminho local.
-    df_data = pd.read_csv('C:\\Users\\Adriel\\Documents\\GitHub\\Projetos\\Análise de dados da FIFA com Streamlit\\datasets\\CLEAN_FIFA23_official_data.csv', index_col=0)
+    df_data = pd.read_csv('C:\\Users\\Adriel\\Documents\\GitHub\\Projetos\\Projetos em Streamlit\\Análise de dados da FIFA\\datasets\\CLEAN_FIFA23_official_data.csv', index_col=0)
     
     # Filtrando os jogadores cujo contrato é válido para o ano atual ou posteriores.
     df_data = df_data[df_data['Contract Valid Until'] >= datetime.today().year]
