@@ -38,7 +38,10 @@ fields = [indice['fields'] for indice in issues]
 resumo = [indice['summary'] for indice in fields]
 
 # Nome Sprint
-sprint = [indice['customfield_10020'][0]['name'] if indice.get('customfield_10020') else None for indice in fields]
+sprint = [indice['customfield_10020'][-1]['name'] if indice.get('customfield_10020') else None for indice in fields]
+
+# Status Sprint
+stt_sprint = [indice['customfield_10020'][-1]['state'] if indice.get('customfield_10020') else None for indice in fields]
 
 # Data da Criação da Tarefa
 data_criacao = [indice['created'] for indice in fields]
@@ -84,6 +87,7 @@ data_dict = {
     "ID da Tarefa": id,
     "Nome da Tarefa": resumo,
     "Sprint": sprint,
+    "Status Sprint": stt_sprint,
     "Data de Criação": data_criacao,
     #"URL da Tarefa": url,
     "Prioridade": prioridade,
@@ -101,12 +105,12 @@ data_dict = {
 #    json.dump(issues, f, indent=4)
 
 df = pd.DataFrame(data_dict)
-
+#df = df[df['Categorias'] != 'Epic']
 # Especificar o caminho e o nome do arquivo
-#caminho_do_arquivo = 'dados_jira.xlsx'
+caminho_do_arquivo = 'dados_jira.xlsx'
 
 # Exportar o DataFrame para Excel
-#df.to_excel(caminho_do_arquivo, index=False)  # index=False para não incluir o índice como uma coluna no arquivo Excel
+df.to_excel(caminho_do_arquivo, index=False)  # index=False para não incluir o índice como uma coluna no arquivo Excel
 
-#print(f'Arquivo exportado com sucesso para {caminho_do_arquivo}')
+print(f'Arquivo exportado com sucesso para {caminho_do_arquivo}')
 
