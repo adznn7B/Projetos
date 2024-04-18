@@ -1,6 +1,8 @@
 import pandas as pd
 import requests as r
 import json
+import mysql.connector
+import numpy as np
 from functions import *
 
 # Funções para tratamento de dados
@@ -16,6 +18,48 @@ def apply_status(row):
         return 'active'
     else:
         return row['Status Sprint']
+
+# Conexão ao banco de dados
+connection  = mysql_connection("177.52.160.63", "acidados_adriel", "k4553K0w!", "acidados_datalake-vm")
+
+# Crie um cursor para executar operações no banco de dados
+cursor = connection.cursor()
+
+# Nome da tabela
+table_name = 'api_jira'
+
+# Verifica se a tabela existe
+cursor.execute(f"SHOW TABLES LIKE '{table_name}';")
+table_exists = cursor.fetchone()
+
+# Se a tabela existir, executa o TRUNCATE
+if table_exists:
+    cursor.execute(f"TRUNCATE TABLE {table_name}")
+    connection.commit()
+    print(f"Tabela {table_name} truncada.")
+    
+# Criando a tabela caso ela não exista
+create_table_query = f"""
+CREATE TABLE IF NOT EXISTS {table_name} (
+    `Chave da Tarefa` VARCHAR(255),
+    `ID da Tarefa` INT,
+    `Nome da Tarefa` TEXT,
+    `Sprint` VARCHAR(255),
+    `Status Sprint` VARCHAR(255),
+    `Data de Criação` DATETIME,
+    `Prioridade` VARCHAR(255),
+    `Responsável` VARCHAR(255),
+    `ID do Pai` INT,
+    `Chave do Pai` VARCHAR(255),
+    `Categorias` VARCHAR(255),
+    `Status` VARCHAR(255),
+    `Horas Previstas` FLOAT
+    -- Adicione mais colunas conforme necessário
+);
+"""
+
+cursor.execute(create_table_query)
+connection.commit()
     
 # Informações do Projeto
 id_projeto = "10012"
@@ -121,3 +165,43 @@ df = df[df['Categorias'] != 'Epic']
 # Tratando as colunas Sprint's    
 df['Sprint'] = df.apply(apply_rule, axis=1)
 df['Status Sprint'] = df.apply(apply_status, axis=1)
+
+# Convertendo e formatando as colunas de data
+df['Data de Criação'] = pd.to_datetime(df['Data de Criação']).dt.strftime('%Y-%m-%d %H:%M:%S')
+
+# Substituir todos os NaN por None em todas as colunas do DataFrame
+df.replace({np.nan: None}, inplace=True)
+
+# Convertendo o DataFrame para uma lista de registros para inserir no MySQL
+# Isso precisa ser feito após a substituição de NaN por None
+values_to_insert = [tuple(row) for row in df.values]
+
+# Inserção dos dados
+insert_query = f"""
+INSERT INTO {table_name} (
+    `Chave da Tarefa`, 
+    `ID da Tarefa`, 
+    `Nome da Tarefa`, 
+    `Sprint`, 
+    `Status Sprint`, 
+    `Data de Criação`, 
+    `Prioridade`, 
+    `Responsável`, 
+    `ID do Pai`, 
+    `Chave do Pai`, 
+    `Categorias`, 
+    `Status`, 
+    `Horas Previstas`
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
+
+# Agora, insira os dados no banco de dados usando a consulta de inserção.
+try:
+    cursor.executemany(insert_query, values_to_insert)
+    connection.commit()
+    print(f"Dados inseridos na tabela {table_name}.")
+except mysql.connector.Error as e:
+    print(f"Erro ao inserir dados: {e}")
+finally:
+    cursor.close()
+    connection.close()
