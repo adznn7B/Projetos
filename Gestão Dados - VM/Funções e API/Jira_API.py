@@ -4,6 +4,20 @@ import numpy as np
 import time
 import json
 
+# Funções para tratamento de dados
+def apply_rule(row):
+    if row['Status Sprint'] in [None, 'closed'] and row['Categorias'] != 'Epic' and row['Status'] not in ['Concluído', 'final']:
+        return 'BACKLOG'
+    else:
+        return row['Sprint']
+
+
+def apply_status(row):
+    if row['Sprint'] in ['BACKLOG']:
+        return 'active'
+    else:
+        return row['Status Sprint']
+    
 # Informações do Projeto
 id_projeto = "10012"
 
@@ -20,7 +34,7 @@ headers = {
 
 query = url + "/rest/api/3/search?jql=project=10012"
 
-# Paginação inicial
+# Requisição
 issues = []
 start_at = 0
 while True:
@@ -31,16 +45,26 @@ while True:
     if start_at >= data['total']:  # Verifica se já foram recuperados todos os itens
         break
     start_at += 50
-
+    
+## Colunas coletadas na API    
 # Resumo da Tarefa
 fields = [indice['fields'] for indice in issues]
 resumo = [indice['summary'] for indice in fields]
+
+# Nome Sprint
+sprint = [indice['customfield_10020'][-1]['name'] if indice.get('customfield_10020') else None for indice in fields]
+
+# Status Sprint
+stt_sprint = [indice['customfield_10020'][-1]['state'] if indice.get('customfield_10020') else None for indice in fields]
 
 # Data da Criação da Tarefa
 data_criacao = [indice['created'] for indice in fields]
 
 # ID da Tarefa
 id = [indice['id'] for indice in issues]
+
+# Chave da Tarefa
+key = [indice['key'] for indice in issues]
 
 # URL da Tarefa
 url = [indice['self'] for indice in issues]
@@ -51,35 +75,50 @@ prioridade = [indice['priority']['name'] for indice in fields]
 # Responsável pela Tarefa
 responsavel = [indice['assignee'] for indice in fields]
 
+# ID Pai
+id_pai = [indice['parent']['id'] if 'parent' in indice and indice['issuetype']['subtask'] else None for indice in fields]
+
+# Chave Pai
+key_pai = [indice['parent']['key'] if 'parent' in indice and indice['issuetype']['subtask'] else None for indice in fields]
+
 # Tags/Categorias
-categorias = [indice['labels'] for indice in fields]
+categorias = [indice['issuetype']['name'] for indice in fields]
 
 # Status da Tarefa
 status = [indice['status']['name'] for indice in fields]
 
-# Total de Tarefas
+# Total de tarefas no projeto
 total_de_issues = data['total']
+
+# Horas previstas do card
+prev = [indice['customfield_10033'] for indice in fields]
+
 
 # Criando Data Frame
 data_dict = {
-    "Resumo": resumo,
-    "Data de Criação": data_criacao,
+    "Chave da Tarefa": key,
     "ID da Tarefa": id,
-    "URL da Tarefa": url,
+    "Nome da Tarefa": resumo,
+    "Sprint": sprint,
+    "Status Sprint": stt_sprint,
+    "Data de Criação": data_criacao,
+    #"URL da Tarefa": url,
     "Prioridade": prioridade,
     "Responsável": [resp['displayName'] if resp is not None else None for resp in responsavel],
+    "ID do Pai": id_pai,
+    "Chave do Pai": key_pai,
     "Categorias": categorias,
     "Status": status,
-    "Total de Tarefas": total_de_issues
+    "Horas Previstas": prev
+    #"Total de Tarefas": total_de_issues
 }
 
-# Criar o DataFrame
+# Criando Data Frame
 df = pd.DataFrame(data_dict)
 
-# Especificar o caminho e o nome do arquivo
-#caminho_do_arquivo = 'dados_jira.xlsx'
+# Retirando todos os epicos coletados
+df = df[df['Categorias'] != 'Epic']
 
-# Exportar o DataFrame para Excel
-#df.to_excel(caminho_do_arquivo, index=False)  # index=False para não incluir o índice como uma coluna no arquivo Excel
-
-#print(f'Arquivo exportado com sucesso para {caminho_do_arquivo}')
+# Tratando as colunas Sprint's    
+df['Sprint'] = df.apply(apply_rule, axis=1)
+df['Status Sprint'] = df.apply(apply_status, axis=1)
