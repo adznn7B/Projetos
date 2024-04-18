@@ -1,8 +1,7 @@
 import pandas as pd
 import requests as r
-import numpy as np
-import time
 import json
+from functions import *
 
 # Funções para tratamento de dados
 def apply_rule(row):
