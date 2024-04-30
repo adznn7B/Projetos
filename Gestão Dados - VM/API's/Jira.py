@@ -97,6 +97,9 @@ resumo = [indice['summary'] for indice in fields]
 # Nome Sprint
 sprint = [indice['customfield_10020'][-1]['name'] if indice.get('customfield_10020') else None for indice in fields]
 
+# Data Sprint
+data_sprint = [indice['customfield_10020'][-1]['startDate'] if indice.get('customfield_10020') else None for indice in fields]
+
 # Status Sprint
 stt_sprint = [indice['customfield_10020'][-1]['state'] if indice.get('customfield_10020') else None for indice in fields]
 
@@ -143,6 +146,7 @@ data_dict = {
     "ID da Tarefa": id,
     "Nome da Tarefa": resumo,
     "Sprint": sprint,
+    "Data Sprint": data_sprint,
     "Status Sprint": stt_sprint,
     "Data de Criação": data_criacao,
     #"URL da Tarefa": url,
