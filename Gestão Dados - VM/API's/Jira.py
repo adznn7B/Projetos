@@ -139,6 +139,12 @@ total_de_issues = data['total']
 # Horas previstas do card
 prev = [indice['customfield_10033'] for indice in fields]
 
+# Empresa
+empresa = [indice['customfield_10075']['value'] if indice.get('customfield_10075') else None for indice in fields]
+
+# Não previsto
+nao_previsto = [indice['customfield_10073']['value'] if indice.get('customfield_10073') else None for indice in fields]
+
 
 # Criando Data Frame
 data_dict = {
@@ -156,7 +162,9 @@ data_dict = {
     "Chave do Pai": key_pai,
     "Categorias": categorias,
     "Status": status,
-    "Horas Previstas": prev
+    "Horas Previstas": prev,
+    "Empresa": empresa,
+    "Não Previsto": nao_previsto
     #"Total de Tarefas": total_de_issues
 }
 
@@ -200,12 +208,20 @@ INSERT INTO {table_name} (
 """
 
 # Agora, insira os dados no banco de dados usando a consulta de inserção.
-try:
-    cursor.executemany(insert_query, values_to_insert)
-    connection.commit()
-    print(f"Dados inseridos na tabela {table_name}.")
-except mysql.connector.Error as e:
-    print(f"Erro ao inserir dados: {e}")
-finally:
-    cursor.close()
-    connection.close()
+#try:
+#    cursor.executemany(insert_query, values_to_insert)
+#    connection.commit()
+#    print(f"Dados inseridos na tabela {table_name}.")
+#except mysql.connector.Error as e:
+#    print(f"Erro ao inserir dados: {e}")
+#finally:
+#    cursor.close()
+#    connection.close()
+
+# Especificar o caminho e o nome do arquivo
+caminho_do_arquivo = 'dados_jira.xlsx'
+
+# Exportar o DataFrame para Excel
+df.to_excel(caminho_do_arquivo, index=False)  # index=False para não incluir o índice como uma coluna no arquivo Excel
+
+print(f'Arquivo exportado com sucesso para {caminho_do_arquivo}')
