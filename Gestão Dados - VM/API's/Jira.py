@@ -95,13 +95,58 @@ fields = [indice['fields'] for indice in issues]
 resumo = [indice['summary'] for indice in fields]
 
 # Nome Sprint
-sprint = [indice['customfield_10020'][-1]['name'] if indice.get('customfield_10020') else None for indice in fields]
+sprint = []
+for indice in fields:
+    # Primeiro tenta encontrar um nome com estado 'active'
+    active_name_sprint = next((item['name'] for item in (indice.get('customfield_10020') or []) if item.get('state') == 'active'), None)
+    
+    if active_name_sprint is not None:
+        # Se encontrou um nome com 'state' 'active', adiciona esse nome à lista
+        sprint.append(active_name_sprint)
+    else:
+        # Se não encontrou, verifica se há algum item em 'customfield_10020'
+        if indice.get('customfield_10020'):
+            # Se há itens, adiciona o nome do último item
+            sprint.append(indice['customfield_10020'][-1]['name'])
+        else:
+            # Se não há itens, adiciona None
+            sprint.append(None)
 
 # Data Sprint
-data_sprint = [indice['customfield_10020'][-1]['startDate'] if indice.get('customfield_10020') else None for indice in fields]
+data_sprint = []
+for indice in fields:
+    # Primeiro tenta encontrar um nome com estado 'active'
+    active_name_data = next((item['startDate'] for item in (indice.get('customfield_10020') or []) if item.get('state') == 'active'), None)
+    
+    if active_name_data is not None:
+        # Se encontrou um nome com 'state' 'active', adiciona esse nome à lista
+        data_sprint.append(active_name_data)
+    else:
+        # Se não encontrou, verifica se há algum item em 'customfield_10020'
+        if indice.get('customfield_10020'):
+            # Se há itens, adiciona o nome do último item
+            data_sprint.append(indice['customfield_10020'][-1]['startDate'])
+        else:
+            # Se não há itens, adiciona None
+            data_sprint.append(None)
 
 # Status Sprint
-stt_sprint = [indice['customfield_10020'][-1]['state'] if indice.get('customfield_10020') else None for indice in fields]
+stt_sprint = []
+for indice in fields:
+    # Primeiro tenta encontrar um nome com estado 'active'
+    active_name_stt = next((item['state'] for item in (indice.get('customfield_10020') or []) if item.get('state') == 'active'), None)
+    
+    if active_name_stt is not None:
+        # Se encontrou um nome com 'state' 'active', adiciona esse nome à lista
+        stt_sprint.append(active_name_stt)
+    else:
+        # Se não encontrou, verifica se há algum item em 'customfield_10020'
+        if indice.get('customfield_10020'):
+            # Se há itens, adiciona o nome do último item
+            stt_sprint.append(indice['customfield_10020'][-1]['state'])
+        else:
+            # Se não há itens, adiciona None
+            stt_sprint.append(None)
 
 # Data da Criação da Tarefa
 data_criacao = [indice['created'] for indice in fields]
@@ -217,6 +262,10 @@ INSERT INTO {table_name} (
 #finally:
 #    cursor.close()
 #    connection.close()
+
+# Salvando as issues em um arquivo JSON
+with open('issues.json', 'w') as f:
+    json.dump(issues,f,indent=4)
 
 # Especificar o caminho e o nome do arquivo
 caminho_do_arquivo = 'dados_jira.xlsx'
