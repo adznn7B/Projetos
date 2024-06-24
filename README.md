@@ -1,5 +1,5 @@
 <h1 align="center">Oi 👋, eu sou Adriel Sena de Alcântara!</h1>
-<h3 align="center">Apaixonado por ciência e análise de dados!</h3>
+<h3 align="center">Apaixonado por Dados!</h3>
 
 - 📫 Você me acha através do e-mail **adriel.sena2003@hotmail.com**
 
